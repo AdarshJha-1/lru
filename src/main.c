@@ -68,6 +68,18 @@ size_t word_count(String_View content, Word needle)
     return count;
 }
 
+bool cache_get(Word word, size_t *freq)
+{
+    (void)word;
+    (void)freq;
+    return false;
+}
+void cache_put(Word word, size_t freq)
+{
+    (void)word;
+    (void)freq;
+}
+
 int main(int argc, char **argv)
 {
     if (argc < 2)
@@ -112,8 +124,12 @@ int main(int argc, char **argv)
             if (word_og.count > 0)
             {
                 Word needle = word_norm(sv_as_word(word_og));
-                size_t freq = word_count(sv_from_parts(content_data, content_size), needle);
-
+                size_t freq = 0;
+                if (!cache_get(needle, &freq))
+                {
+                    size_t freq = word_count(sv_from_parts(content_data, content_size), needle);
+                    cache_put(needle, freq);
+                }
                 printf(SV_Fmt "(%zu) ", SV_Arg(word_og), freq);
             }
         }
